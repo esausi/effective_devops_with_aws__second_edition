@@ -3,6 +3,7 @@ resource "aws_instance" "playground" {
   instance_type = "t2.micro"
   user_data = <<EOF
 #!/bin/bash
+sudo amazon-linux-extras enable corretto8
 sudo yum -y remove java-11-amazon-corretto-headless
 sudo yum -y remove java-11-amazon-corretto
 sudo yum -y install java-1.8.0-amazon-corretto
