@@ -36,7 +36,7 @@ EOF
 resource "aws_security_group" "rds" {
   name = "allow_from_my_vpc"
   description = "Allow from my vpc"
-  vpc_id = {{var.my_defaul_vpcid}}
+  vpc_id = "${var.my_defaul_vpcid}"
 
   ingress {
     from_port = 3306
