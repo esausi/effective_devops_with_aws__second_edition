@@ -4,7 +4,7 @@ resource "aws_instance" "playground" {
   user_data = <<EOF
 #!/bin/bash
 sudo amazon-linux-extras enable corretto8 ; sudo yum -y remove java-11-amazon-corretto-headless java-11-amazon-corretto ; sudo yum -y install java-1.8.0-amazon-corretto
-sudo yum -y install httpd mariadb.x86_64 mariadb-server 
+sudo yum -y install httpd mariadb.x86_64 mariadb-server
 echo "<VirtualHost *>" > /etc/httpd/conf.d/tomcat-proxy.conf
 echo "        ProxyPass               /visits      http://localhost:8080/visits" >> /etc/httpd/conf.d/tomcat-proxy.conf
 echo "        ProxyPassReverse       /visits      http://localhost:8080/visits" >> /etc/httpd/conf.d/tomcat-proxy.conf
@@ -31,6 +31,42 @@ EOF
   tags = {
     Name = "Monolith Playground"
   }
+}
+
+resource "aws_security_group" "rds" {
+  name = "allow_from_my_vpc"
+  description = "Allow from my vpc"
+  vpc_id = {{var.my_defaul_vpcid}}
+
+  ingress {
+    from_port = 3306
+    to_port = 3306
+    protocol = "tcp"
+    cidr_blocks = ["172.31.0.0/16"]
+  }
+}
+
+module "db" {
+  source = "terraform-aws-modules/rds/aws"
+  identifier = "demodb"
+  engine = "mysql"
+  engine_version = "5.7.19"
+  instance_class = "db.t2.micro"
+  allocated_storage = 5
+  name = "demodb"
+  username = "monty"
+  password = "some_pass"
+  port = 3306
+
+  vpc_security_group_ids = ["${aws_security_group.rds.id}"]
+  # DB subnet group
+  subnet_ids = ["subnet-dp56b4ff", "subnet-b541edfe"]
+  maintenance_window = "Mon:00:00-Mon:03:00"
+  backup_window = "03:00-06:00"
+  # DB parameter group
+  family = "mysql5.7"
+  # DB option group
+  major_engine_version = "5.7"
 }
 
 resource "aws_security_group" "playground" {
