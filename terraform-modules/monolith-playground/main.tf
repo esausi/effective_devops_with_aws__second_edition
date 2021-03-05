@@ -60,7 +60,8 @@ module "db" {
 
   vpc_security_group_ids = ["${aws_security_group.rds.id}"]
   # DB subnet group
-  subnet_ids = ["subnet-dp56b4ff", "subnet-b541edfe"]
+  #subnet_ids = ["subnet-6a0c9627", "subnet-b541edfe"]
+  subnet_ids = ["subnet-dp56b4ff", "subnet-67558238"]
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window = "03:00-06:00"
   # DB parameter group
