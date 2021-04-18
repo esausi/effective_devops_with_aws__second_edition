@@ -24,6 +24,8 @@ cd /etc/systemd/system/ ; curl -O https://raw.githubusercontent.com/esausi/effec
 chmod +x /home/ec2-user/tomcat.sh
 systemctl enable tomcat.service
 systemctl start tomcat.service
+#Install EC2 Instance Connect for allow connections using any publickey
+sudo yum -y install ec2-instance-connect
 EOF
   vpc_security_group_ids = ["${aws_security_group.playground.id}"]
   subnet_id = "${var.my_subnet}"
