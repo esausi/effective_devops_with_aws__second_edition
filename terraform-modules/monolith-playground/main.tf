@@ -4,20 +4,20 @@ resource "aws_instance" "playground" {
   user_data = <<EOF
 #!/bin/bash
 sudo amazon-linux-extras enable corretto8 ; sudo yum -y remove java-11-amazon-corretto-headless java-11-amazon-corretto ; sudo yum -y install java-1.8.0-amazon-corretto
-sudo yum -y install httpd mariadb.x86_64 mariadb-server
+#sudo yum -y install httpd mariadb.x86_64 mariadb-server
 echo "<VirtualHost *>" > /etc/httpd/conf.d/tomcat-proxy.conf
 echo "        ProxyPass               /visits      http://localhost:8080/visits" >> /etc/httpd/conf.d/tomcat-proxy.conf
 echo "        ProxyPassReverse       /visits      http://localhost:8080/visits" >> /etc/httpd/conf.d/tomcat-proxy.conf
 echo "</VirtualHost>" >> /etc/httpd/conf.d/tomcat-proxy.conf
-systemctl start mariadb
+#systemctl start mariadb
 chkconfig httpd on
-chkconfig mariadb on
+#chkconfig mariadb on
 systemctl restart httpd
-mysql -u root -e "create database demodb;"
-mysql -u root -e "CREATE TABLE visits (id bigint(20) NOT NULL AUTO_INCREMENT, count bigint(20) NOT NULL, version bigint(20) NOT NULL, PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=latin1;" demodb
-mysql -u root -e "INSERT INTO demodb.visits (count) values (0) ;"
-mysql -u root -e "CREATE USER 'monty'@'localhost' IDENTIFIED BY 'some_pass';"
-mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'monty'@'localhost' WITH GRANT OPTION;"
+#mysql -u root -e "create database demodb;" -h demodb.cppfbbymwiar.us-east-1.rds.amazonaws.com
+#mysql -u root -e "CREATE TABLE visits (id bigint(20) NOT NULL AUTO_INCREMENT, count bigint(20) NOT NULL, version bigint(20) NOT NULL, PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=latin1;" demodb -h demodb.cppfbbymwiar.us-east-1.rds.amazonaws.com
+#mysql -u root -e "INSERT INTO demodb.visits (count) values (0) ;"
+#mysql -u root -e "CREATE USER 'monty'@'localhost' IDENTIFIED BY 'some_pass';"
+#mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'monty'@'localhost' WITH GRANT OPTION;"
 runuser -l ec2-user -c 'cd /home/ec2-user ; curl -O https://raw.githubusercontent.com/esausi/effective_devops_with_aws__second_edition/master/terraform-modules/monolith-playground/demo-0.0.1-SNAPSHOT.jar'
 runuser -l ec2-user -c 'cd /home/ec2-user ; curl -O https://raw.githubusercontent.com/esausi/effective_devops_with_aws__second_edition/master/terraform-modules/monolith-playground/tomcat.sh'
 cd /etc/systemd/system/ ; curl -O https://raw.githubusercontent.com/esausi/effective_devops_with_aws__second_edition/master/terraform-modules/monolith-playground/tomcat.service
